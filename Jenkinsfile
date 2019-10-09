@@ -1,17 +1,36 @@
 node {
-    checkout scm
-    
-    stage('save-env') {
-        sh 'env > properties'
+    def app
+
+    stage('Clone repository') {
+        /* Let's make sure we have the repository cloned to our workspace */
+
+        checkout scm
     }
 
-    stage('build-image') {
-        sh 'docker build -t $IMAGE_REPO:$IMAGE_TAG .'
+    stage('Build image') {
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
+
+        app = docker.build("getintodevops/hellonode")
     }
-    
-    stage('push-image') {
-        sh 'gcloud docker -- push $IMAGE_REPO:$IMAGE_TAG'
+
+    stage('Test image') {
+        /* Ideally, we would run a test framework against our image.
+         * For this example, we're using a Volkswagen-type approach ;-) */
+
+        app.inside {
+            sh 'echo "Tests passed"'
+        }
     }
-    
-    archiveArtifacts 'properties'
+
+    stage('Push image') {
+        /* Finally, we'll push the image with two tags:
+         * First, the incremental build number from Jenkins
+         * Second, the 'latest' tag.
+         * Pushing multiple tags is cheap, as all the layers are reused. */
+        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
+        }
+    }
 }
