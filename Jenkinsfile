@@ -6,11 +6,17 @@ node {
 
         checkout scm
     }
+    
+    stage('user') {
+        wrap([$class: 'BuildUser']) {
+          sh 'echo "${BUILD_USER}"'
+      }
+    }
 
     stage('Build image') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
-
+        sh("echo whoami")
         app = docker.build("getintodevops/hellonode")
     }
 
