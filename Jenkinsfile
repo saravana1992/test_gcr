@@ -10,7 +10,7 @@ node {
     stage('Build image') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
-        sh "docker build -t eu.gcr.io/qwiklabs-gcp-gcpd-9e814583b62e/app ."
+        sh "docker build -t eu.gcr.io/qwiklabs-gcp-gcpd-0758baced02d/app ."
     }
 
     stage('auth docker') {
@@ -32,6 +32,6 @@ node {
          * First, the incremental build number from Jenkins
          * Second, the 'latest' tag.
          * Pushing multiple tags is cheap, as all the layers are reused. */
-        sh "docker push eu.gcr.io/qwiklabs-gcp-gcpd-9e814583b62e/app"
+        sh "docker push eu.gcr.io/qwiklabs-gcp-gcpd-0758baced02d/app"
     }
 }
