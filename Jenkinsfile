@@ -15,8 +15,8 @@ node {
 
     stage('auth docker') {
         withCredentials([file(credentialsId: "	test", variable: 'GC_KEY')]) {
-                sh "gcloud auth activate-service-account --key-file=${GC_KEY}"
-                sh "gcloud auth configure-docker"
+                sh "~/kube/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=${GC_KEY}"
+                sh "~/kube/google-cloud-sdk/bin/gcloud auth configure-docker"
         }
     }
 
