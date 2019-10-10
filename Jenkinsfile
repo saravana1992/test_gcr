@@ -15,6 +15,13 @@ node {
 
 
     stage('Push image') {
-        sh "docker push eu.gcr.io/qwiklabs-gcp-gcpd-9e814583b62e/app"
+         /* Finally, we'll push the image with two tags:
+         * First, the incremental build number from Jenkins
+         * Second, the 'latest' tag.
+         * Pushing multiple tags is cheap, as all the layers are reused. */
+        docker.withRegistry('https://eu.gcr.io', 'gcr:[qwiklabs-gcp-gcpd-9e814583b62e') {
+            app.push("${env.BUILD_NUMBER}")
+            app.push("latest")
         }
+    }
 }
