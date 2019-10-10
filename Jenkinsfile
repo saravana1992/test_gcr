@@ -17,5 +17,4 @@ node {
     stage('Push image') {
         sh "docker push eu.gcr.io/qwiklabs-gcp-gcpd-9e814583b62e/app"
         }
-    }
 }
