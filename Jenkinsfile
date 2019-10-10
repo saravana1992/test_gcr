@@ -20,13 +20,6 @@ node {
         }
     }
 
-    stage('Build image') {
-        /* This builds the actual image; synonymous to
-         * docker build on the command line */
-        sh "docker build -t eu.gcr.io/qwiklabs-gcp-gcpd-9e814583b62e/app ."
-    }
-
-
     stage('Push image') {
          /* Finally, we'll push the image with two tags:
          * First, the incremental build number from Jenkins
