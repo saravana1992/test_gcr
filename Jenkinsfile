@@ -65,17 +65,6 @@ spec:
 }
   }
   stages {
-    stage('git_clone') {
-      steps {
-        container('git') {
-            git(
-                    url: "${env.GIT_DOCKER_URL}",
-                    credentialsId: "${env.GIT_DOCKER_CREDENTIALS_ID}",
-                    branch: "${env.GIT_DOCKER_BRANCH}"
-                )
-           }
-        }
-    }
     stage('Build and push image with Container Builder') {
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
