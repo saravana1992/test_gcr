@@ -42,7 +42,7 @@ spec:
     - cat
     tty: true
   - name: helm
-    image: gcr.io/crafty-mile-241013/helm
+    image: gcr.io/crafty-mile-241013/helm1:latest
     command:
     - cat
     tty: true
