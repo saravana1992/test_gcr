@@ -79,8 +79,8 @@ spec:
         container('helm') {
           sh '''cd `pwd`
           ls
-          helm template -f `pwd`/helloworld-chart/values.yml helloworld-chart/templates
-          helm upgrade -f `pwd`/helloworld-chart/values.yml -i hello-world --namespace jenkins helloworld-chart/templates'''
+          helm template -f `pwd`/helloworld-chart/values.yaml helloworld-chart/templates
+          helm upgrade -f `pwd`/helloworld-chart/values.yaml -i hello-world --namespace jenkins helloworld-chart/templates'''
         }
       }
     }
