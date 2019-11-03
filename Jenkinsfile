@@ -76,7 +76,7 @@ spec:
     }
     stage('Helm Deploy') {
       steps {
-        container(name: 'helm') {
+        container('helm') {
           sh '''helm ls'''
         }
       }
