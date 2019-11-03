@@ -59,8 +59,8 @@ spec:
         value: /secret/kaniko-secret.json
   volumes:
    - name: kaniko-secret
-      secret:
-        secretName: kaniko-secret   
+     secret:
+       secretName: kaniko-secret   
 """
 }
   }
