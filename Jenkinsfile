@@ -77,7 +77,7 @@ spec:
     stage('Helm Deploy') {
       steps {
         container('helm') {
-          sh '''helm template -f `pwd`/helloworld-chart/values.yml helloworld-chart/templates/nginx-ingress 
+          sh '''helm template -f `pwd`/helloworld-chart/values.yml helloworld-chart/templates
           helm upgrade -f `pwd`/helloworld-chart/values.yml -i hello-world --namespace jenkins helloworld-chart/templates'''
         }
       }
