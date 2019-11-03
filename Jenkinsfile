@@ -80,7 +80,7 @@ spec:
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
           sh '''#!/busybox/sh
-          /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure-skip-tls-verify --destination=gcr.io/crafty-mile-241013/helm:latest
+          /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=gcr.io/crafty-mile-241013/helm:latest
           '''
         }
       }
