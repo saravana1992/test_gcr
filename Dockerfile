@@ -1,1 +1,4 @@
-FROM golang:1.8 
+FROM busybox
+ADD app/index.html /www/index.html
+EXPOSE 80
+CMD httpd -p 80 -h /www; tail -f /dev/null

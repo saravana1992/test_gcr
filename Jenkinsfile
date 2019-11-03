@@ -75,4 +75,12 @@ spec:
       }
     }
   }
+  stage('Helm Deploy') {
+      steps {
+        container(name: 'helm') {
+          sh '''helm ls'''
+        }
+      }
+    }
+  }
 }
