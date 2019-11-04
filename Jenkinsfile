@@ -3,7 +3,7 @@ pipeline {
   environment {
     PROJECT = "crafty-mile-241013"
     APP_NAME = "test-app"
-    APP_NAMESPACE = "jenkins"
+    NAMESPACE = "jenkins"
     CLUSTER = "standard-cluster-1"
     CLUSTER_ZONE = "us-central1-a"
     IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}:${env.BUILD_NUMBER}"
@@ -13,7 +13,7 @@ pipeline {
     GIT_BRANCH = "master"
     HELM_TEMPLATE = "helloworld-chart"
     HELM_VALUE_FILE = "/helloworld-chart/values.yaml"
-    HELM_NAME = "hello-world"    
+    HELM_NAME = "hello-world"
   }
 
   agent {
