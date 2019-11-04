@@ -3,13 +3,17 @@ pipeline {
   environment {
     PROJECT = "crafty-mile-241013"
     APP_NAME = "test-app"
+    APP_NAMESPACE = "jenkins"
     CLUSTER = "standard-cluster-1"
     CLUSTER_ZONE = "us-central1-a"
     IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}:${env.BUILD_NUMBER}"
     JENKINS_CRED = "${PROJECT}"
-    GIT_DOCKER_URL = "https://github.com/saravana1992/test_gcr.git"
-    GIT_DOCKER_CREDENTIALS_ID = "29ef3999-bdc8-4db7-8c00-53370e295c07"
-    GIT_DOCKER_BRANCH = "master"
+    GIT_URL = "https://github.com/saravana1992/test_gcr.git"
+    GIT_CREDENTIALS_ID = "29ef3999-bdc8-4db7-8c00-53370e295c07"
+    GIT_BRANCH = "master"
+    HELM_TEMPLATE = "helloworld-chart"
+    HELM_VALUE_FILE = "/helloworld-chart/values.yaml"
+    HELM_NAME = "hello-world"    
   }
 
   agent {
@@ -69,7 +73,7 @@ spec:
       steps {
         container(name: 'kaniko', shell: '/busybox/sh') {
           sh '''#!/busybox/sh
-          /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=gcr.io/crafty-mile-241013/helm:latest
+          /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=${IMAGE_TAG}
           '''
         }
       }
@@ -77,10 +81,9 @@ spec:
     stage('Helm Deploy') {
       steps {
         container('helm') {
-          sh '''cd `pwd`
-          ls
-          helm template -f `pwd`/helloworld-chart/values.yaml helloworld-chart
-          helm upgrade -f `pwd`/helloworld-chart/values.yaml -i hello-world --namespace jenkins helloworld-chart'''
+          sh '''
+          helm template -f `pwd`$HELM_VALUE_FILE $HELM_TEMPLATE
+          helm upgrade -f `pwd`$HELM_VALUE_FILE -i $HELM_NAME --namespace $NAMESPACE $HELM_TEMPLATE'''
         }
       }
     }
