@@ -87,5 +87,13 @@ spec:
         }
       }
     }
+    stage('Validate deployment') {
+      steps {
+        container('kubectl') {
+          sh '''
+          kubectl rollout status deployment $HELM_NAME --namespace $NAMESPACE'''
+        }
+      }
+    }
   }
 }
