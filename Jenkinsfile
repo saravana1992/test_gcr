@@ -14,6 +14,7 @@ pipeline {
     HELM_TEMPLATE = "helloworld-chart"
     HELM_VALUE_FILE = "/helloworld-chart/values.yaml"
     HELM_NAME = "hello-world"
+    DEPLOYMENT_NAME = "hello-world-helloworld-chart"
   }
 
   agent {
@@ -91,7 +92,7 @@ spec:
       steps {
         container('kubectl') {
           sh '''
-          kubectl rollout status deployment $HELM_NAME --namespace $NAMESPACE'''
+          kubectl rollout status deployment $DEPLOYMENT_NAME --namespace $NAMESPACE'''
         }
       }
     }
