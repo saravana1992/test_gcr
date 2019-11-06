@@ -70,8 +70,8 @@ spec:
 }
   }
   stages {
-    try {
-      stage('Build and push image with Container Builder') {
+    stage('Build and push image with Container Builder') {
+      try {
         steps {
           container(name: 'kaniko', shell: '/busybox/sh') {
             sh '''#!/busybox/sh
