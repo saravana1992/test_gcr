@@ -105,29 +105,29 @@ spec:
 
 
 
-post {
-aborted {
+  post {
+  aborted {
 
-  echo "Sending message to Slack"
-  slackSend (color: "${env.SLACK_COLOR_WARNING}",
-             channel: "${env.SLACK_CHANNEL_1}",
-             message: "*ABORTED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
-} // aborted
+    echo "Sending message to Slack"
+    slackSend (color: "${env.SLACK_COLOR_WARNING}",
+               channel: "${env.SLACK_CHANNEL_1}",
+               message: "*ABORTED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
+  } // aborted
 
-failure {
+  failure {
 
-  echo "Sending message to Slack"
-  slackSend (color: "${env.SLACK_COLOR_DANGER}",
-             channel: "${env.SLACK_CHANNEL_1}",
-             message: "*FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
-} // failure
+    echo "Sending message to Slack"
+    slackSend (color: "${env.SLACK_COLOR_DANGER}",
+               channel: "${env.SLACK_CHANNEL_1}",
+               message: "*FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
+  } // failure
 
-success {
-  echo "Sending message to Slack"
-  slackSend (color: "${env.SLACK_COLOR_GOOD}",
-             channel: "${env.SLACK_CHANNEL_1}",
-             message: "*SUCCESS:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
-} // success
+  success {
+    echo "Sending message to Slack"
+    slackSend (color: "${env.SLACK_COLOR_GOOD}",
+               channel: "${env.SLACK_CHANNEL_1}",
+               message: "*SUCCESS:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
+  } // success
 
-} // post
+  } // post
 }
