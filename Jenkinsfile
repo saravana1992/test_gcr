@@ -19,28 +19,6 @@ pipeline {
     SLACK_WEBHOOK = 'https://hooks.slack.com/services/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';
   }
 
-  ////////////////////////////// Slack Fuctions ////////////////////////////////////
-
-import groovy.json.JsonOutput
-
-def slackURL = "${env.SLACK_WEBHOOK}"
-def jobName = "${env.JOB_NAME}"
-def buildNo = "${env.BUILD_NUMBER}"
-def status = ''
-def logResult = ''
-def specialCHAR = "[':]"
-def replaceCHAR = ""
-
-def sendToSlack(text, attachments, slackURL) {
-    def payload = JsonOutput.toJson([
-        text: text,
-        attachments: attachments
-    ])
-    sh '#!/bin/sh -e\n' + "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
-}
-
-//////////////////////////////////////////////////////////////////////////////////
-
   agent {
     kubernetes {
       label 'sample-app'
@@ -120,14 +98,5 @@ spec:
         }
       }
     }
-    stage ("Slack Notification") {
-            sendToSlack(" ",[
-                [
-                    title: "Project name: ${jobName} \nStatus : Success",
-                    color: "good",
-                    text: "Build Job Number #${buildNo} \nImage_Tag #${buildNo}"
-                ]
-            ], slackURL)
-        }
   }
 }
