@@ -107,6 +107,7 @@ spec:
     notifyBuild(currentBuild.result)
   }
 }
+}
 
 
     def notifyBuild(String buildStatus = 'STARTED') {
