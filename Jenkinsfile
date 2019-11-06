@@ -70,8 +70,8 @@ spec:
 }
   }
   stages {
-    stage('Build and push image with Container Builder') {
-      try {
+    try {
+      stage('Build and push image with Container Builder') {
         steps {
           container(name: 'kaniko', shell: '/busybox/sh') {
             sh '''#!/busybox/sh
@@ -97,8 +97,7 @@ spec:
           }
         }
       }
-     }
-    catch (e) {
+  } catch (e) {
     // If there was an exception thrown, the build failed
     currentBuild.result = "FAILED"
     throw e
