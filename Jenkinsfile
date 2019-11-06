@@ -1,5 +1,17 @@
 pipeline {
 
+  parameters {
+
+    string(name: 'SLACK_CHANNEL_1',
+           description: 'Default Slack channel to send messages to',
+           defaultValue: '#my_channel_1')
+
+    string(name: 'SLACK_CHANNEL_2',
+           description: 'Default Slack channel to send messages to',
+           defaultValue: '#my_channel_2')           
+
+  } // parameters  
+
   environment {
     PROJECT = "crafty-mile-241013"
     APP_NAME = "test-app"
@@ -15,6 +27,10 @@ pipeline {
     HELM_VALUE_FILE = "/helloworld-chart/values.yaml"
     HELM_NAME = "hello-world"
     DEPLOYMENT_NAME = "hello-world-helloworld-chart"
+    SLACK_COLOR_DANGER  = '#E01563'
+    SLACK_COLOR_INFO    = '#6ECADC'
+    SLACK_COLOR_WARNING = '#FFC300'
+    SLACK_COLOR_GOOD    = '#3EB991'
   }
 
   agent {
@@ -70,7 +86,6 @@ spec:
 }
   }
   stages {
-    try {
       stage('Build and push image with Container Builder') {
         steps {
           container(name: 'kaniko', shell: '/busybox/sh') {
@@ -97,42 +112,33 @@ spec:
           }
         }
       }
-  } catch (e) {
-    // If there was an exception thrown, the build failed
-    currentBuild.result = "FAILED"
-    throw e
-  } finally {
-    // Success or failure, always send notifications
-    notifyBuild(currentBuild.result)
-  }
-}
-}
-
-
-    def notifyBuild(String buildStatus = 'STARTED') {
-    // build status of null means successful
-    buildStatus = buildStatus ?: 'SUCCESS'
-
-    // Default values
-    def colorName = 'RED'
-    def colorCode = '#FF0000'
-    def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
-    def summary = "${subject} (${env.BUILD_URL})"
-    def details = """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-      <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>"""
-
-    // Override default values based on build status
-    if (buildStatus == 'STARTED') {
-      color = 'YELLOW'
-      colorCode = '#FFFF00'
-    } else if (buildStatus == 'SUCCESS') {
-      color = 'GREEN'
-      colorCode = '#00FF00'
-    } else {
-      color = 'RED'
-      colorCode = '#FF0000'
     }
 
-    // Send notifications
-    slackSend (color: colorCode, message: summary)
-  }
+
+
+post {
+aborted {
+
+  echo "Sending message to Slack"
+  slackSend (color: "${env.SLACK_COLOR_WARNING}",
+             channel: "${params.SLACK_CHANNEL_2}",
+             message: "*ABORTED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
+} // aborted
+
+failure {
+
+  echo "Sending message to Slack"
+  slackSend (color: "${env.SLACK_COLOR_DANGER}",
+             channel: "${params.SLACK_CHANNEL_2}",
+             message: "*FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
+} // failure
+
+success {
+  echo "Sending message to Slack"
+  slackSend (color: "${env.SLACK_COLOR_GOOD}",
+             channel: "${params.SLACK_CHANNEL_1}",
+             message: "*SUCCESS:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
+} // success
+
+} // post
+}
