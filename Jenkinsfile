@@ -15,8 +15,6 @@ pipeline {
     HELM_VALUE_FILE = "/helloworld-chart/values.yaml"
     HELM_NAME = "hello-world"
     DEPLOYMENT_NAME = "hello-world-helloworld-chart"
-    // Slack Hook URL
-    SLACK_WEBHOOK = 'https://hooks.slack.com/services/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';
   }
 
   agent {
@@ -71,32 +69,70 @@ spec:
 """
 }
   }
-  stages {
-    stage('Build and push image with Container Builder') {
-      steps {
-        container(name: 'kaniko', shell: '/busybox/sh') {
-          sh '''#!/busybox/sh
-          /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=${IMAGE_TAG}
-          '''
+  try {
+    stages {
+      stage('Build and push image with Container Builder') {
+        steps {
+          container(name: 'kaniko', shell: '/busybox/sh') {
+            sh '''#!/busybox/sh
+            /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=${IMAGE_TAG}
+            '''
+          }
+        }
+      }
+      stage('Helm Deploy') {
+        steps {
+          container('helm') {
+            sh '''
+            helm template -f `pwd`$HELM_VALUE_FILE $HELM_TEMPLATE
+            helm upgrade -f `pwd`$HELM_VALUE_FILE -i $HELM_NAME --namespace $NAMESPACE $HELM_TEMPLATE'''
+          }
+        }
+      }
+      stage('Validate deployment') {
+        steps {
+          container('kubectl') {
+            sh '''
+            kubectl rollout status deployment $DEPLOYMENT_NAME --namespace $NAMESPACE'''
+          }
         }
       }
     }
-    stage('Helm Deploy') {
-      steps {
-        container('helm') {
-          sh '''
-          helm template -f `pwd`$HELM_VALUE_FILE $HELM_TEMPLATE
-          helm upgrade -f `pwd`$HELM_VALUE_FILE -i $HELM_NAME --namespace $NAMESPACE $HELM_TEMPLATE'''
-        }
-      }
-    }
-    stage('Validate deployment') {
-      steps {
-        container('kubectl') {
-          sh '''
-          kubectl rollout status deployment $DEPLOYMENT_NAME --namespace $NAMESPACE'''
-        }
-      }
-    }
+    } catch (e) {
+    // If there was an exception thrown, the build failed
+    currentBuild.result = "FAILED"
+    throw e
+  } finally {
+    // Success or failure, always send notifications
+    notifyBuild(currentBuild.result)
   }
 }
+
+
+    def notifyBuild(String buildStatus = 'STARTED') {
+    // build status of null means successful
+    buildStatus = buildStatus ?: 'SUCCESS'
+
+    // Default values
+    def colorName = 'RED'
+    def colorCode = '#FF0000'
+    def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+    def summary = "${subject} (${env.BUILD_URL})"
+    def details = """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+      <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>"""
+
+    // Override default values based on build status
+    if (buildStatus == 'STARTED') {
+      color = 'YELLOW'
+      colorCode = '#FFFF00'
+    } else if (buildStatus == 'SUCCESS') {
+      color = 'GREEN'
+      colorCode = '#00FF00'
+    } else {
+      color = 'RED'
+      colorCode = '#FF0000'
+    }
+
+    // Send notifications
+    slackSend (color: colorCode, message: summary)
+  }
