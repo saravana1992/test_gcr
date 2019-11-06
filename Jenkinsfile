@@ -77,7 +77,7 @@ spec:
   stages {
       stage('Build and push image with Container Builder') {
         steps {
-          container(name: 'kanik', shell: '/busybox/sh') {
+          container(name: 'kaniko', shell: '/busybox/sh') {
             sh '''#!/busybox/sh
             /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=${IMAGE_TAG}
             '''
@@ -111,7 +111,7 @@ aborted {
   echo "Sending message to Slack"
   slackSend (color: "${env.SLACK_COLOR_WARNING}",
              channel: "${env.SLACK_CHANNEL_1}",
-             message: "*ABORTED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
+             message: "*ABORTED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
 } // aborted
 
 failure {
@@ -119,14 +119,14 @@ failure {
   echo "Sending message to Slack"
   slackSend (color: "${env.SLACK_COLOR_DANGER}",
              channel: "${env.SLACK_CHANNEL_1}",
-             message: "*FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
+             message: "*FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
 } // failure
 
 success {
   echo "Sending message to Slack"
   slackSend (color: "${env.SLACK_COLOR_GOOD}",
              channel: "${env.SLACK_CHANNEL_1}",
-             message: "*SUCCESS:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
+             message: "*SUCCESS:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}")
 } // success
 
 } // post
