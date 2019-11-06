@@ -1,17 +1,5 @@
 pipeline {
 
-  parameters {
-
-    string(name: 'SLACK_CHANNEL_1',
-           description: 'Default Slack channel to send messages to',
-           defaultValue: '#my_channel_1')
-
-    string(name: 'SLACK_CHANNEL_2',
-           description: 'Default Slack channel to send messages to',
-           defaultValue: '#my_channel_2')           
-
-  } // parameters  
-
   environment {
     PROJECT = "crafty-mile-241013"
     APP_NAME = "test-app"
@@ -31,6 +19,7 @@ pipeline {
     SLACK_COLOR_INFO    = '#6ECADC'
     SLACK_COLOR_WARNING = '#FFC300'
     SLACK_COLOR_GOOD    = '#3EB991'
+    SLACK_CHANNEL_1 = 'testjenkins'
   }
 
   agent {
@@ -88,7 +77,7 @@ spec:
   stages {
       stage('Build and push image with Container Builder') {
         steps {
-          container(name: 'kaniko', shell: '/busybox/sh') {
+          container(name: 'kanik', shell: '/busybox/sh') {
             sh '''#!/busybox/sh
             /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --destination=${IMAGE_TAG}
             '''
@@ -121,7 +110,7 @@ aborted {
 
   echo "Sending message to Slack"
   slackSend (color: "${env.SLACK_COLOR_WARNING}",
-             channel: "${params.SLACK_CHANNEL_2}",
+             channel: "${env.SLACK_CHANNEL_1}",
              message: "*ABORTED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
 } // aborted
 
@@ -129,14 +118,14 @@ failure {
 
   echo "Sending message to Slack"
   slackSend (color: "${env.SLACK_COLOR_DANGER}",
-             channel: "${params.SLACK_CHANNEL_2}",
+             channel: "${env.SLACK_CHANNEL_1}",
              message: "*FAILED:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
 } // failure
 
 success {
   echo "Sending message to Slack"
   slackSend (color: "${env.SLACK_COLOR_GOOD}",
-             channel: "${params.SLACK_CHANNEL_1}",
+             channel: "${env.SLACK_CHANNEL_1}",
              message: "*SUCCESS:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} by ${env.USER_ID}\n More info at: ${env.BUILD_URL}")
 } // success
 
